@@ -1,8 +1,3 @@
-#include <Arduino.h>
-#include <M5Unified.h>
-#include <SPI.h>
-#include <M5_Ethernet.h>
-
 /*
 MIT License
 
@@ -28,6 +23,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#include <Arduino.h>
+#include <M5Unified.h>
+#include <SPI.h>
+#include <M5_Ethernet.h>
+#include <vector>
 
 #ifndef M5_Ethernet_FtpClient_H
 #define M5_Ethernet_FtpClient_H
@@ -97,6 +97,9 @@ private:
     bool inASCIIMode = false;
     bool isErrorCode(uint16_t responseCode);
 
+    std::vector<String> SplitPath(const String &path);
+
+
 public:
     M5_Ethernet_FtpClient(char *_serverAdress, uint16_t _port, char *_userName, char *_passWord, uint16_t _timeout = 10000);
     M5_Ethernet_FtpClient(char *_serverAdress, char *_userName, char *_passWord, uint16_t _timeout = 10000);
@@ -118,6 +121,7 @@ public:
     uint16_t ChangeWorkDir(String dir);
     uint16_t DeleteFile(String file);
     uint16_t MakeDir(String dir);
+    uint16_t MakeDirRecursive(String dir);
     uint16_t RemoveDir(String dir);
     uint16_t ContentList(const char *dir, String *list);
     uint16_t ContentListWithListCommand(const char *dir, String *list);
