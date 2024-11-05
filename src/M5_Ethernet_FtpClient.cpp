@@ -1,9 +1,3 @@
-#include <Arduino.h>
-#include <M5Unified.h>
-#include <SPI.h>
-#include <M5_Ethernet.h>
-#include "M5_Ethernet_FtpClient.hpp"
-
 /*
 MIT License
 
@@ -29,6 +23,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#include <Arduino.h>
+#include <M5Unified.h>
+#include <SPI.h>
+#include <M5_Ethernet.h>
+#include "M5_Ethernet_FtpClient.hpp"
 
 /////////////////////////////////////////////
 M5_Ethernet_FtpClient::M5_Ethernet_FtpClient(char *_serverAdress, uint16_t _port, char *_userName, char *_passWord, uint16_t _timeout)
@@ -485,6 +484,50 @@ uint16_t M5_Ethernet_FtpClient::MakeDir(String dir)
   client.println(dir);
   return GetCmdAnswer();
 }
+
+uint16_t M5_Ethernet_FtpClient::MakeDirRecursive(String dir) {
+    if (!isConnected()) {
+        FTP_LOGERROR("MakeDirRecursive: Not connected error");
+        return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
+    }
+
+    FTP_LOGINFO("Send MKD Recursive");
+
+    std::vector<String> paths = SplitPath(dir);
+    String currentPath = "";
+
+    for (const String &subDir : paths) {
+        currentPath += "/" + subDir;
+        client.print(FTP_COMMAND_MAKE_DIR);
+        client.println(currentPath);
+        uint16_t res = GetCmdAnswer();
+        if (isErrorCode(res) && res != 550) { // Ignore "Directory already exists" error
+            return res;
+        }
+    }
+    return FTP_RESCODE_ACTION_SUCCESS;
+}
+
+
+std::vector<String> M5_Ethernet_FtpClient::SplitPath(const String &path) {
+    std::vector<String> paths;
+    String tempPath = "";
+    for (char c : path) {
+        if (c == '/') {
+            if (tempPath.length() > 0) {
+                paths.push_back(tempPath);
+            }
+            tempPath = "";
+        } else {
+            tempPath += c;
+        }
+    }
+    if (tempPath.length() > 0) {
+        paths.push_back(tempPath);
+    }
+    return paths;
+}
+
 /////////////////////////////////////////////
 
 uint16_t M5_Ethernet_FtpClient::RemoveDir(String dir)
