@@ -80,10 +80,11 @@ private:
     char outBuf[1024];
     unsigned char outCount;
 
-    char *userName;
-    char *passWord;
-    char *serverAdress;
+    String userName;
+    String passWord;
+    String serverAdress;
     uint16_t port;
+
     bool _isConnected = false;
     unsigned char clientBuf[FTP_BUFFER_SIZE];
     size_t bufferSize = FTP_BUFFER_SIZE;
@@ -99,10 +100,12 @@ private:
 
     std::vector<String> SplitPath(const String &path);
 
-
 public:
-    M5_Ethernet_FtpClient(char *_serverAdress, uint16_t _port, char *_userName, char *_passWord, uint16_t _timeout = 10000);
-    M5_Ethernet_FtpClient(char *_serverAdress, char *_userName, char *_passWord, uint16_t _timeout = 10000);
+    //    M5_Ethernet_FtpClient(char *_serverAdress, uint16_t _port, char *_userName, char *_passWord, uint16_t _timeout = 10000);
+    //    M5_Ethernet_FtpClient(char *_serverAdress, char *_userName, char *_passWord, uint16_t _timeout = 10000);
+
+    M5_Ethernet_FtpClient(String _serverAdress, uint16_t _port, String _userName, String _passWord, uint16_t _timeout = 10000);
+    M5_Ethernet_FtpClient(String _serverAdress, String _userName, String _passWord, uint16_t _timeout = 10000);
 
     uint16_t OpenConnection();
     void CloseConnection();
@@ -110,7 +113,7 @@ public:
     uint16_t InitAsciiPassiveMode();
     uint16_t NewFile(String fileName);
     uint16_t AppendFile(String fileName);
-    uint16_t AppendTextLine(String filePath,String textLine);
+    uint16_t AppendTextLine(String filePath, String textLine);
     uint16_t WriteData(unsigned char *data, int dataLength);
     uint16_t WriteData(String data);
     uint16_t CloseDataClient();
@@ -129,60 +132,300 @@ public:
     uint16_t DownloadFile(const char *filename, unsigned char *buf, size_t length, bool printUART = false);
 };
 
-#define FTP_DEBUG_OUTPUT      M5.Lcd
-//#define FTP_DEBUG_OUTPUT      Serial
+#define FTP_DEBUG_OUTPUT M5.Lcd
+// #define FTP_DEBUG_OUTPUT      Serial
 
-const char FTP_MARK[]  = "[FTP] ";
+const char FTP_MARK[] = "[FTP] ";
 const char FTP_SPACE[] = " ";
-const char FTP_LINE[]  = "========================================\n";
+const char FTP_LINE[] = "========================================\n";
 
-#define FTP_PRINT_MARK   FTP_PRINT(FTP_MARK)
-#define FTP_PRINT_SP     FTP_PRINT(FTP_SPACE)
-#define FTP_PRINT_LINE   FTP_PRINT(FTP_LINE)
+#define FTP_PRINT_MARK FTP_PRINT(FTP_MARK)
+#define FTP_PRINT_SP FTP_PRINT(FTP_SPACE)
+#define FTP_PRINT_LINE FTP_PRINT(FTP_LINE)
 
-#define FTP_PRINT        FTP_DEBUG_OUTPUT.print
-#define FTP_PRINTLN      FTP_DEBUG_OUTPUT.println
-
-///////////////////////////////////////
-
-#define FTP_LOGERROR(x)         if(_FTP_LOGLEVEL_>0) { FTP_PRINT_MARK; FTP_PRINTLN(x); }
-#define FTP_LOGERROR_LINE(x)    if(_FTP_LOGLEVEL_>0) { FTP_PRINT_MARK; FTP_PRINTLN(x); FTP_PRINT_LINE; }
-#define FTP_LOGERROR0(x)        if(_FTP_LOGLEVEL_>0) { FTP_PRINT(x); }
-#define FTP_LOGERROR1(x,y)      if(_FTP_LOGLEVEL_>0) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINTLN(y); }
-#define FTP_LOGERROR2(x,y,z)    if(_FTP_LOGLEVEL_>0) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINTLN(z); }
-#define FTP_LOGERROR3(x,y,z,w)  if(_FTP_LOGLEVEL_>0) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINTLN(w); }
-#define FTP_LOGERROR5(x,y,z,w, xx, yy)  if(_FTP_LOGLEVEL_>0) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINT(w); FTP_PRINT_SP; FTP_PRINT(xx); FTP_PRINT_SP; FTP_PRINTLN(yy);}
+#define FTP_PRINT FTP_DEBUG_OUTPUT.print
+#define FTP_PRINTLN FTP_DEBUG_OUTPUT.println
 
 ///////////////////////////////////////
 
-#define FTP_LOGWARN(x)          if(_FTP_LOGLEVEL_>1) { FTP_PRINT_MARK; FTP_PRINTLN(x); }
-#define FTP_LOGWARN_LINE(x)     if(_FTP_LOGLEVEL_>1) { FTP_PRINT_MARK; FTP_PRINTLN(x); FTP_PRINT_LINE; }
-#define FTP_LOGWARN0(x)         if(_FTP_LOGLEVEL_>1) { FTP_PRINT(x); }
-#define FTP_LOGWARN1(x,y)       if(_FTP_LOGLEVEL_>1) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINTLN(y); }
-#define FTP_LOGWARN2(x,y,z)     if(_FTP_LOGLEVEL_>1) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINTLN(z); }
-#define FTP_LOGWARN3(x,y,z,w)   if(_FTP_LOGLEVEL_>1) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINTLN(w); }
-#define FTP_LOGWARN5(x,y,z,w, xx, yy)  if(_FTP_LOGLEVEL_>1) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINT(w); FTP_PRINT_SP; FTP_PRINT(xx); FTP_PRINT_SP; FTP_PRINTLN(yy);}
+#define FTP_LOGERROR(x)     \
+    if (_FTP_LOGLEVEL_ > 0) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINTLN(x);     \
+    }
+#define FTP_LOGERROR_LINE(x) \
+    if (_FTP_LOGLEVEL_ > 0)  \
+    {                        \
+        FTP_PRINT_MARK;      \
+        FTP_PRINTLN(x);      \
+        FTP_PRINT_LINE;      \
+    }
+#define FTP_LOGERROR0(x)    \
+    if (_FTP_LOGLEVEL_ > 0) \
+    {                       \
+        FTP_PRINT(x);       \
+    }
+#define FTP_LOGERROR1(x, y) \
+    if (_FTP_LOGLEVEL_ > 0) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINT(x);       \
+        FTP_PRINT_SP;       \
+        FTP_PRINTLN(y);     \
+    }
+#define FTP_LOGERROR2(x, y, z) \
+    if (_FTP_LOGLEVEL_ > 0)    \
+    {                          \
+        FTP_PRINT_MARK;        \
+        FTP_PRINT(x);          \
+        FTP_PRINT_SP;          \
+        FTP_PRINT(y);          \
+        FTP_PRINT_SP;          \
+        FTP_PRINTLN(z);        \
+    }
+#define FTP_LOGERROR3(x, y, z, w) \
+    if (_FTP_LOGLEVEL_ > 0)       \
+    {                             \
+        FTP_PRINT_MARK;           \
+        FTP_PRINT(x);             \
+        FTP_PRINT_SP;             \
+        FTP_PRINT(y);             \
+        FTP_PRINT_SP;             \
+        FTP_PRINT(z);             \
+        FTP_PRINT_SP;             \
+        FTP_PRINTLN(w);           \
+    }
+#define FTP_LOGERROR5(x, y, z, w, xx, yy) \
+    if (_FTP_LOGLEVEL_ > 0)               \
+    {                                     \
+        FTP_PRINT_MARK;                   \
+        FTP_PRINT(x);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(y);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(z);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(w);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(xx);                    \
+        FTP_PRINT_SP;                     \
+        FTP_PRINTLN(yy);                  \
+    }
 
 ///////////////////////////////////////
 
-#define FTP_LOGINFO(x)          if(_FTP_LOGLEVEL_>2) { FTP_PRINT_MARK; FTP_PRINTLN(x); }
-#define FTP_LOGINFO_LINE(x)     if(_FTP_LOGLEVEL_>2) { FTP_PRINT_MARK; FTP_PRINTLN(x); FTP_PRINT_LINE; }
-#define FTP_LOGINFO0(x)         if(_FTP_LOGLEVEL_>2) { FTP_PRINT(x); }
-#define FTP_LOGINFO1(x,y)       if(_FTP_LOGLEVEL_>2) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINTLN(y); }
-#define FTP_LOGINFO2(x,y,z)     if(_FTP_LOGLEVEL_>2) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINTLN(z); }
-#define FTP_LOGINFO3(x,y,z,w)   if(_FTP_LOGLEVEL_>2) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINTLN(w); }
-#define FTP_LOGINFO5(x,y,z,w, xx, yy)  if(_FTP_LOGLEVEL_>2) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINT(w); FTP_PRINT_SP; FTP_PRINT(xx); FTP_PRINT_SP; FTP_PRINTLN(yy);}
+#define FTP_LOGWARN(x)      \
+    if (_FTP_LOGLEVEL_ > 1) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINTLN(x);     \
+    }
+#define FTP_LOGWARN_LINE(x) \
+    if (_FTP_LOGLEVEL_ > 1) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINTLN(x);     \
+        FTP_PRINT_LINE;     \
+    }
+#define FTP_LOGWARN0(x)     \
+    if (_FTP_LOGLEVEL_ > 1) \
+    {                       \
+        FTP_PRINT(x);       \
+    }
+#define FTP_LOGWARN1(x, y)  \
+    if (_FTP_LOGLEVEL_ > 1) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINT(x);       \
+        FTP_PRINT_SP;       \
+        FTP_PRINTLN(y);     \
+    }
+#define FTP_LOGWARN2(x, y, z) \
+    if (_FTP_LOGLEVEL_ > 1)   \
+    {                         \
+        FTP_PRINT_MARK;       \
+        FTP_PRINT(x);         \
+        FTP_PRINT_SP;         \
+        FTP_PRINT(y);         \
+        FTP_PRINT_SP;         \
+        FTP_PRINTLN(z);       \
+    }
+#define FTP_LOGWARN3(x, y, z, w) \
+    if (_FTP_LOGLEVEL_ > 1)      \
+    {                            \
+        FTP_PRINT_MARK;          \
+        FTP_PRINT(x);            \
+        FTP_PRINT_SP;            \
+        FTP_PRINT(y);            \
+        FTP_PRINT_SP;            \
+        FTP_PRINT(z);            \
+        FTP_PRINT_SP;            \
+        FTP_PRINTLN(w);          \
+    }
+#define FTP_LOGWARN5(x, y, z, w, xx, yy) \
+    if (_FTP_LOGLEVEL_ > 1)              \
+    {                                    \
+        FTP_PRINT_MARK;                  \
+        FTP_PRINT(x);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(y);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(z);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(w);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(xx);                   \
+        FTP_PRINT_SP;                    \
+        FTP_PRINTLN(yy);                 \
+    }
 
 ///////////////////////////////////////
 
-#define FTP_LOGDEBUG(x)         if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINTLN(x); }
-#define FTP_LOGDEBUG_LINE(x)    if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINTLN(x); FTP_PRINT_LINE; }
-#define FTP_LOGDEBUG0m(x)        if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINT(x);}
-#define FTP_LOGDEBUG0(x)        if(_FTP_LOGLEVEL_>3) { FTP_PRINT(x); }
-#define FTP_LOGDEBUG1(x,y)      if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINTLN(y); }
-#define FTP_LOGHEXDEBUG1(x,y)   if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINTLN(y, HEX); }
-#define FTP_LOGDEBUG2(x,y,z)    if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINTLN(z); }
-#define FTP_LOGDEBUG3(x,y,z,w)  if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINTLN(w); }
-#define FTP_LOGDEBUG5(x,y,z,w, xx, yy)  if(_FTP_LOGLEVEL_>3) { FTP_PRINT_MARK; FTP_PRINT(x); FTP_PRINT_SP; FTP_PRINT(y); FTP_PRINT_SP; FTP_PRINT(z); FTP_PRINT_SP; FTP_PRINT(w); FTP_PRINT_SP; FTP_PRINT(xx); FTP_PRINT_SP; FTP_PRINTLN(yy);}
+#define FTP_LOGINFO(x)      \
+    if (_FTP_LOGLEVEL_ > 2) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINTLN(x);     \
+    }
+#define FTP_LOGINFO_LINE(x) \
+    if (_FTP_LOGLEVEL_ > 2) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINTLN(x);     \
+        FTP_PRINT_LINE;     \
+    }
+#define FTP_LOGINFO0(x)     \
+    if (_FTP_LOGLEVEL_ > 2) \
+    {                       \
+        FTP_PRINT(x);       \
+    }
+#define FTP_LOGINFO1(x, y)  \
+    if (_FTP_LOGLEVEL_ > 2) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINT(x);       \
+        FTP_PRINT_SP;       \
+        FTP_PRINTLN(y);     \
+    }
+#define FTP_LOGINFO2(x, y, z) \
+    if (_FTP_LOGLEVEL_ > 2)   \
+    {                         \
+        FTP_PRINT_MARK;       \
+        FTP_PRINT(x);         \
+        FTP_PRINT_SP;         \
+        FTP_PRINT(y);         \
+        FTP_PRINT_SP;         \
+        FTP_PRINTLN(z);       \
+    }
+#define FTP_LOGINFO3(x, y, z, w) \
+    if (_FTP_LOGLEVEL_ > 2)      \
+    {                            \
+        FTP_PRINT_MARK;          \
+        FTP_PRINT(x);            \
+        FTP_PRINT_SP;            \
+        FTP_PRINT(y);            \
+        FTP_PRINT_SP;            \
+        FTP_PRINT(z);            \
+        FTP_PRINT_SP;            \
+        FTP_PRINTLN(w);          \
+    }
+#define FTP_LOGINFO5(x, y, z, w, xx, yy) \
+    if (_FTP_LOGLEVEL_ > 2)              \
+    {                                    \
+        FTP_PRINT_MARK;                  \
+        FTP_PRINT(x);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(y);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(z);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(w);                    \
+        FTP_PRINT_SP;                    \
+        FTP_PRINT(xx);                   \
+        FTP_PRINT_SP;                    \
+        FTP_PRINTLN(yy);                 \
+    }
+
+///////////////////////////////////////
+
+#define FTP_LOGDEBUG(x)     \
+    if (_FTP_LOGLEVEL_ > 3) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINTLN(x);     \
+    }
+#define FTP_LOGDEBUG_LINE(x) \
+    if (_FTP_LOGLEVEL_ > 3)  \
+    {                        \
+        FTP_PRINT_MARK;      \
+        FTP_PRINTLN(x);      \
+        FTP_PRINT_LINE;      \
+    }
+#define FTP_LOGDEBUG0m(x)   \
+    if (_FTP_LOGLEVEL_ > 3) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINT(x);       \
+    }
+#define FTP_LOGDEBUG0(x)    \
+    if (_FTP_LOGLEVEL_ > 3) \
+    {                       \
+        FTP_PRINT(x);       \
+    }
+#define FTP_LOGDEBUG1(x, y) \
+    if (_FTP_LOGLEVEL_ > 3) \
+    {                       \
+        FTP_PRINT_MARK;     \
+        FTP_PRINT(x);       \
+        FTP_PRINT_SP;       \
+        FTP_PRINTLN(y);     \
+    }
+#define FTP_LOGHEXDEBUG1(x, y) \
+    if (_FTP_LOGLEVEL_ > 3)    \
+    {                          \
+        FTP_PRINT_MARK;        \
+        FTP_PRINT(x);          \
+        FTP_PRINT_SP;          \
+        FTP_PRINTLN(y, HEX);   \
+    }
+#define FTP_LOGDEBUG2(x, y, z) \
+    if (_FTP_LOGLEVEL_ > 3)    \
+    {                          \
+        FTP_PRINT_MARK;        \
+        FTP_PRINT(x);          \
+        FTP_PRINT_SP;          \
+        FTP_PRINT(y);          \
+        FTP_PRINT_SP;          \
+        FTP_PRINTLN(z);        \
+    }
+#define FTP_LOGDEBUG3(x, y, z, w) \
+    if (_FTP_LOGLEVEL_ > 3)       \
+    {                             \
+        FTP_PRINT_MARK;           \
+        FTP_PRINT(x);             \
+        FTP_PRINT_SP;             \
+        FTP_PRINT(y);             \
+        FTP_PRINT_SP;             \
+        FTP_PRINT(z);             \
+        FTP_PRINT_SP;             \
+        FTP_PRINTLN(w);           \
+    }
+#define FTP_LOGDEBUG5(x, y, z, w, xx, yy) \
+    if (_FTP_LOGLEVEL_ > 3)               \
+    {                                     \
+        FTP_PRINT_MARK;                   \
+        FTP_PRINT(x);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(y);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(z);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(w);                     \
+        FTP_PRINT_SP;                     \
+        FTP_PRINT(xx);                    \
+        FTP_PRINT_SP;                     \
+        FTP_PRINTLN(yy);                  \
+    }
 
 #endif

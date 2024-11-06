@@ -30,7 +30,7 @@ SOFTWARE.
 #include "M5_Ethernet_FtpClient.hpp"
 
 /////////////////////////////////////////////
-M5_Ethernet_FtpClient::M5_Ethernet_FtpClient(char *_serverAdress, uint16_t _port, char *_userName, char *_passWord, uint16_t _timeout)
+M5_Ethernet_FtpClient::M5_Ethernet_FtpClient(String _serverAdress, uint16_t _port, String _userName, String _passWord, uint16_t _timeout)
 {
   userName = _userName;
   passWord = _passWord;
@@ -39,7 +39,7 @@ M5_Ethernet_FtpClient::M5_Ethernet_FtpClient(char *_serverAdress, uint16_t _port
   timeout = _timeout;
 }
 
-M5_Ethernet_FtpClient::M5_Ethernet_FtpClient(char *_serverAdress, char *_userName, char *_passWord, uint16_t _timeout)
+M5_Ethernet_FtpClient::M5_Ethernet_FtpClient(String _serverAdress, String _userName, String _passWord, uint16_t _timeout)
 {
   userName = _userName;
   passWord = _passWord;
@@ -74,7 +74,7 @@ uint16_t M5_Ethernet_FtpClient::OpenConnection()
 #if ((ESP32) && !FTP_CLIENT_USING_ETHERNET)
   if (client.connect(serverAdress, port, timeout))
 #else
-  if (client.connect(serverAdress, port))
+  if (client.connect(serverAdress.c_str(), port))
 #endif
   {
     FTP_LOGINFO(F("Command connected"));
@@ -128,7 +128,7 @@ uint16_t M5_Ethernet_FtpClient::GetCmdAnswer(char *result, int offsetStart)
     strcpy(outBuf, "Offline");
     _isConnected = false;
     isConnected();
-    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED; 
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
   }
 
   while (client.available())
@@ -147,7 +147,7 @@ uint16_t M5_Ethernet_FtpClient::GetCmdAnswer(char *result, int offsetStart)
   {
     _isConnected = false;
     isConnected();
-    return responseCode; 
+    return responseCode;
   }
   else
   {
@@ -169,7 +169,7 @@ uint16_t M5_Ethernet_FtpClient::GetCmdAnswer(char *result, int offsetStart)
   }
 
   FTP_LOGDEBUG0(outBuf);
-  return responseCode; 
+  return responseCode;
 }
 
 /**
@@ -186,14 +186,14 @@ uint16_t M5_Ethernet_FtpClient::InitAsciiPassiveMode()
   client.println("TYPE A"); // Set ASCII mode
   responseCode = GetCmdAnswer();
 
-  if (isErrorCode(responseCode)) 
+  if (isErrorCode(responseCode))
     return responseCode;
 
   FTP_LOGINFO("Send PASV");
   client.println(FTP_COMMAND_PASSIVE_MODE);
 
   responseCode = GetCmdAnswer();
-  if (isErrorCode(responseCode)) 
+  if (isErrorCode(responseCode))
     return responseCode;
 
   char *tmpPtr;
@@ -202,7 +202,7 @@ uint16_t M5_Ethernet_FtpClient::InitAsciiPassiveMode()
     client.println(FTP_COMMAND_PASSIVE_MODE);
 
     responseCode = GetCmdAnswer();
-    if (isErrorCode(responseCode)) 
+    if (isErrorCode(responseCode))
       return responseCode;
 
     delay(1000);
@@ -278,7 +278,7 @@ uint16_t M5_Ethernet_FtpClient::ContentList(const char *dir, String *list)
   if (!isConnected())
   {
     FTP_LOGERROR("ContentList: Not connected error");
-    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED; 
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
   }
 
   char _resp[sizeof(outBuf)];
@@ -323,7 +323,7 @@ uint16_t M5_Ethernet_FtpClient::ContentListWithListCommand(const char *dir, Stri
   if (!isConnected())
   {
     FTP_LOGERROR("ContentListWithListCommand: Not connected error");
-    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED; 
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
   }
 
   char _resp[sizeof(outBuf)];
@@ -372,7 +372,7 @@ uint16_t M5_Ethernet_FtpClient::GetLastModifiedTime(const char *fileName, char *
   if (!isConnected())
   {
     FTP_LOGERROR("GetLastModifiedTime: Not connected error");
-    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED; 
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
   }
 
   FTP_LOGINFO("Send MDTM");
@@ -388,7 +388,7 @@ uint16_t M5_Ethernet_FtpClient::Write(const char *str)
   if (!isConnected())
   {
     FTP_LOGERROR("Write: Not connected error");
-    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED; 
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
   }
 
   FTP_LOGDEBUG(F("Write File"));
@@ -404,7 +404,7 @@ uint16_t M5_Ethernet_FtpClient::CloseDataClient()
   if (!isConnected())
   {
     FTP_LOGERROR("CloseFile: Not connected error");
-    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED; 
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
   }
 
   FTP_LOGDEBUG(F("Close File"));
@@ -420,7 +420,7 @@ uint16_t M5_Ethernet_FtpClient::RenameFile(String from, String to)
   if (!isConnected())
   {
     FTP_LOGERROR("RenameFile: Not connected error");
-    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED; 
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
   }
 
   FTP_LOGINFO("Send RNFR");
@@ -485,47 +485,57 @@ uint16_t M5_Ethernet_FtpClient::MakeDir(String dir)
   return GetCmdAnswer();
 }
 
-uint16_t M5_Ethernet_FtpClient::MakeDirRecursive(String dir) {
-    if (!isConnected()) {
-        FTP_LOGERROR("MakeDirRecursive: Not connected error");
-        return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
+uint16_t M5_Ethernet_FtpClient::MakeDirRecursive(String dir)
+{
+  if (!isConnected())
+  {
+    FTP_LOGERROR("MakeDirRecursive: Not connected error");
+    return FTP_RESCODE_CLIENT_ISNOT_CONNECTED;
+  }
+
+  FTP_LOGINFO("Send MKD Recursive");
+
+  std::vector<String> paths = SplitPath(dir);
+  String currentPath = "";
+
+  for (const String &subDir : paths)
+  {
+    currentPath += "/" + subDir;
+    client.print(FTP_COMMAND_MAKE_DIR);
+    client.println(currentPath);
+    uint16_t res = GetCmdAnswer();
+    if (isErrorCode(res) && res != 550)
+    { // Ignore "Directory already exists" error
+      return res;
     }
-
-    FTP_LOGINFO("Send MKD Recursive");
-
-    std::vector<String> paths = SplitPath(dir);
-    String currentPath = "";
-
-    for (const String &subDir : paths) {
-        currentPath += "/" + subDir;
-        client.print(FTP_COMMAND_MAKE_DIR);
-        client.println(currentPath);
-        uint16_t res = GetCmdAnswer();
-        if (isErrorCode(res) && res != 550) { // Ignore "Directory already exists" error
-            return res;
-        }
-    }
-    return FTP_RESCODE_ACTION_SUCCESS;
+  }
+  return FTP_RESCODE_ACTION_SUCCESS;
 }
 
-
-std::vector<String> M5_Ethernet_FtpClient::SplitPath(const String &path) {
-    std::vector<String> paths;
-    String tempPath = "";
-    for (char c : path) {
-        if (c == '/') {
-            if (tempPath.length() > 0) {
-                paths.push_back(tempPath);
-            }
-            tempPath = "";
-        } else {
-            tempPath += c;
-        }
-    }
-    if (tempPath.length() > 0) {
+std::vector<String> M5_Ethernet_FtpClient::SplitPath(const String &path)
+{
+  std::vector<String> paths;
+  String tempPath = "";
+  for (char c : path)
+  {
+    if (c == '/')
+    {
+      if (tempPath.length() > 0)
+      {
         paths.push_back(tempPath);
+      }
+      tempPath = "";
     }
-    return paths;
+    else
+    {
+      tempPath += c;
+    }
+  }
+  if (tempPath.length() > 0)
+  {
+    paths.push_back(tempPath);
+  }
+  return paths;
 }
 
 /////////////////////////////////////////////
@@ -644,7 +654,7 @@ uint16_t M5_Ethernet_FtpClient::WriteClientBuffered(EthernetClient *cli, unsigne
     cli->write(clientBuf, clientCount);
     FTP_LOGDEBUG1("Last Written: num bytes =", clientCount);
   }
-  return FTP_RESCODE_ACTION_SUCCESS; 
+  return FTP_RESCODE_ACTION_SUCCESS;
 }
 
 /////////////////////////////////////////////
