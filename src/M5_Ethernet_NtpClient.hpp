@@ -33,7 +33,6 @@ public:
     String readHour();
     String readMinute();
     String readSecond();
-    
 };
 
 M5_Ethernet_NtpClient NtpClient;
@@ -63,10 +62,11 @@ String M5_Ethernet_NtpClient::getTime(String address, int timezone)
             unsigned long secsSince1900 = highWord << 16 | lowWord;
             const unsigned long seventyYears = 2208988800UL;
             unsigned long epoch = secsSince1900 - seventyYears;
+            epoch += timezoneOffset * 3600;
+            
             lastEpoch = epoch;
             lastMillis = millis();
             intMillis = millis();
-            epoch += timezoneOffset * 3600;
 
             // create a time string
             char buffer[30];
@@ -79,8 +79,7 @@ String M5_Ethernet_NtpClient::getTime(String address, int timezone)
     if (lastEpoch != 0)
     {
         unsigned long currentEpoch = lastEpoch + ((millis() - lastMillis) / 1000);
-        currentEpoch += timezoneOffset * 3600;
-
+        
         // create a time string
         char buffer[30];
         sprintf(buffer, "%02d:%02d:%02d", (currentEpoch % 86400L) / 3600, (currentEpoch % 3600) / 60, currentEpoch % 60);
@@ -129,7 +128,6 @@ String M5_Ethernet_NtpClient::readMonth()
         char buffer[3];
         sprintf(buffer, "%02d", ptm->tm_mon + 1); // tm_mon is months since January (0-11)
         return String(buffer);
-
     }
     return String("Month not available");
 }
@@ -142,7 +140,6 @@ String M5_Ethernet_NtpClient::readDay()
         char buffer[3];
         sprintf(buffer, "%02d", ptm->tm_mday); // tm_mday is day of the month (1-31)
         return String(buffer);
-
     }
     return String("Day not available");
 }
@@ -155,7 +152,6 @@ String M5_Ethernet_NtpClient::readHour()
         char buffer[3];
         sprintf(buffer, "%02d", ptm->tm_hour); // tm_hour is hour of the day (0-23)
         return String(buffer);
-
     }
     return String("Hour not available");
 }
@@ -168,7 +164,6 @@ String M5_Ethernet_NtpClient::readMinute()
         char buffer[3];
         sprintf(buffer, "%02d", ptm->tm_min); // tm_min is minute of the hour (0-59)
         return String(buffer);
-
     }
     return String("Minute not available");
 }
@@ -184,6 +179,5 @@ String M5_Ethernet_NtpClient::readSecond()
     }
     return String("Second not available");
 }
-
 
 #endif
