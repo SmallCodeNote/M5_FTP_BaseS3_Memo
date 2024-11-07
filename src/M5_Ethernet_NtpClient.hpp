@@ -27,12 +27,12 @@ public:
     String getTime(String address);
     String getTime(String address, int timezoneOffset);
 
-    String getYear();
-    String getMonth();
-    String getDay();
-    String getHour();
-    String getMinute();
-    String getSecond();
+    String readYear();
+    String readMonth();
+    String readDay();
+    String readHour();
+    String readMinute();
+    String readSecond();
     
 };
 
@@ -111,7 +111,7 @@ void M5_Ethernet_NtpClient::sendNTPpacket(const char *address)
     Udp.endPacket();
 }
 
-String M5_Ethernet_NtpClient::getYear()
+String M5_Ethernet_NtpClient::readYear()
 {
     if (lastEpoch != 0)
     {
@@ -121,7 +121,7 @@ String M5_Ethernet_NtpClient::getYear()
     return String("Year not available");
 }
 
-String M5_Ethernet_NtpClient::getMonth()
+String M5_Ethernet_NtpClient::readMonth()
 {
     if (lastEpoch != 0)
     {
@@ -134,7 +134,7 @@ String M5_Ethernet_NtpClient::getMonth()
     return String("Month not available");
 }
 
-String M5_Ethernet_NtpClient::getDay()
+String M5_Ethernet_NtpClient::readDay()
 {
     if (lastEpoch != 0)
     {
@@ -147,7 +147,7 @@ String M5_Ethernet_NtpClient::getDay()
     return String("Day not available");
 }
 
-String M5_Ethernet_NtpClient::getHour()
+String M5_Ethernet_NtpClient::readHour()
 {
     if (lastEpoch != 0)
     {
@@ -160,7 +160,7 @@ String M5_Ethernet_NtpClient::getHour()
     return String("Hour not available");
 }
 
-String M5_Ethernet_NtpClient::getMinute()
+String M5_Ethernet_NtpClient::readMinute()
 {
     if (lastEpoch != 0)
     {
@@ -173,7 +173,7 @@ String M5_Ethernet_NtpClient::getMinute()
     return String("Minute not available");
 }
 
-String M5_Ethernet_NtpClient::getSecond()
+String M5_Ethernet_NtpClient::readSecond()
 {
     if (lastEpoch != 0)
     {

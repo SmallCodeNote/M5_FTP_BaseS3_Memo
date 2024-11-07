@@ -23,13 +23,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 #include <Arduino.h>
 #include <M5Unified.h>
 #include <SPI.h>
 #include <M5_Ethernet.h>
 #include "M5_Ethernet_FtpClient.hpp"
 
-/////////////////////////////////////////////
 M5_Ethernet_FtpClient::M5_Ethernet_FtpClient(String _serverAdress, uint16_t _port, String _userName, String _passWord, uint16_t _timeout)
 {
   userName = _userName;

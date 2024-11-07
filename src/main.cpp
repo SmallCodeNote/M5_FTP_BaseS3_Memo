@@ -143,17 +143,17 @@ void loop()
   M5.Display.setCursor(0, 12);
 
   String timeLine = NtpClient.getTime(ntp_address, +9);
-  String YYYY = NtpClient.getYear();
-  String MM = NtpClient.getMonth();
-  String DD = NtpClient.getDay();
-  String HH = NtpClient.getHour();
+  String YYYY = NtpClient.readYear();
+  String MM = NtpClient.readMonth();
+  String DD = NtpClient.readDay();
+  String HH = NtpClient.readHour();
 
   M5.Display.println(timeLine);
   Serial.println(timeLine);
 
   ftp.OpenConnection();
-  ftp.MakeDirRecursive("/" + deviceName + "/" + YYYY + "/" + YYYY + MM);
-  ftp.AppendTextLine("/" + deviceName + "/" + YYYY + "/" + YYYY + MM + "/" + YYYY + MM + DD + ".txt", timeLine);
+  ftp.MakeDirRecursive("/" + deviceName + "/" + YYYY + "/" + YYYY + MM + "/" + YYYY + MM + DD);
+  ftp.AppendTextLine("/" + deviceName + "/" + YYYY + "/" + YYYY + MM + "/" + YYYY + MM + DD + "/" + YYYY + MM + DD + "_" + HH + ".txt", timeLine);
   ftp.CloseConnection();
 
   HTTPUI();
@@ -208,7 +208,7 @@ void HTTPUI()
         {
           if (isPost)
           {
-            // POSTデータの読み込み
+            // Load post data
             while (client.available())
             {
               char c = client.read();
@@ -234,8 +234,8 @@ void HTTPUI()
 
             EEPROM.put<DATA_SET>(0, storeData);
             EEPROM.commit();
-            delay(1000);   // 1秒の遅延を追加
-            ESP.restart(); // M5Stackの再起動
+            delay(1000);
+            ESP.restart();
           }
 
           client.println("HTTP/1.1 200 OK");
@@ -245,7 +245,7 @@ void HTTPUI()
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
           client.println("<body>");
-          client.println("<h1>M5Stack W5500 Test</h1>");
+          client.println("<h1>M5Stack W5500 Unit</h1>");
           client.println("<br />");
 
           /*
@@ -254,7 +254,7 @@ void HTTPUI()
           HTML_PUT_INFOWITHLABEL(ftpSrvIP_String);
           HTML_PUT_INFOWITHLABEL(ntpSrvIP_String);
           */
-         
+
           client.println("<form action=\"/\" method=\"post\">");
           client.println("<ul>");
 
